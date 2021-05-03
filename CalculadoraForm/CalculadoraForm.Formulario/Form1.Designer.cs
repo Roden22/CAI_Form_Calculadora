@@ -82,7 +82,7 @@
             this.btnCalcularExpr.TabIndex = 7;
             this.btnCalcularExpr.Text = "Calcular";
             this.btnCalcularExpr.UseVisualStyleBackColor = true;
-            this.btnCalcularExpr.Click += new System.EventHandler(this.btnCalcularExpr_Click);
+            this.btnCalcularExpr.Click += new System.EventHandler(this.BtnCalcularExpr_Click);
             // 
             // label3
             // 
@@ -105,10 +105,11 @@
             // 
             this.lblResultado.AutoSize = true;
             this.lblResultado.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblResultado.Location = new System.Drawing.Point(421, 352);
+            this.lblResultado.Location = new System.Drawing.Point(396, 332);
             this.lblResultado.Name = "lblResultado";
             this.lblResultado.Size = new System.Drawing.Size(0, 18);
             this.lblResultado.TabIndex = 8;
+            this.lblResultado.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnSumar
             // 

@@ -9,72 +9,152 @@ namespace CalculadoraForm.Biblioteca
 {
     public class Calc
     {
+        // ATRIBUTOS
+        private double _valor1;
+        private double _valor2;
+        private double _resultado;
+        private bool _resultadoActualizado;
+        private string _error;
 
-        public static bool CalcularExpresion(string expresion, out decimal resultado)
+
+        // PROPIEDADES
+        public double Valor1
+        {
+            get => _valor1;
+            set
+            {
+                _valor1 = value;
+                _resultadoActualizado = false;
+                _error = "Se actualizaron los valores y el resultado está desactualizado";
+            }
+        }
+        public double Valor2
+        {
+            get => _valor2;
+            set
+            {
+                _valor2 = value;
+                _resultadoActualizado = false;
+                _error = "Se actualizaron los valores y el resultado está desactualizado";
+            }
+        }
+        public double Resultado 
+        {
+            get
+            {
+                if (!_resultadoActualizado) return double.NaN;
+                return _resultado;
+            }
+            private set 
+            { 
+                _resultado = value;
+                _resultadoActualizado = true;
+            } 
+        }
+        public string Error => _error;
+
+        // MÉTODOS
+        public Calc()
+        {
+            Valor1 = 0;
+            Valor2 = 0;
+            _resultadoActualizado = false;
+            _error = "";
+        }
+
+        public double CalcularExpresion(string expresion)
         {
             string regex = @"^\s*(?<valA>-?\d+\.?\d*)\s*(?<op>[\+\*-/])\s*(?<valB>-?\d+\.?\d*)\s*$";
-            decimal valorA, valorB;
 
             Match match = System.Text.RegularExpressions.Regex.Match(expresion, regex);
 
             if (!match.Success)
             {
-                resultado = 0;
-                return false;
+                _error = "La expresión de cálculo es incorrecta o no está soportada.";
+                Resultado = double.NaN;
+                return double.NaN;
             }
             else
             {
-                if (!ValidarDecimal(match.Groups["valA"].Value, out valorA) ||
-                    !ValidarDecimal(match.Groups["valB"].Value, out valorB))
+                if (!ValidarDouble(match.Groups["valA"].Value, out double v1) ||
+                    !ValidarDouble(match.Groups["valB"].Value, out double v2))
                 {
-                    resultado = 0;
-                    return false;
+                    _error = "Los valores ingresados no se pueden convertir a números.";
+                    Resultado = double.NaN;
+                    return double.NaN;
                 }
-                return Calcular(valorA, valorB, match.Groups["op"].Value, out resultado);
+
+                // Camino feliz
+                Valor1 = v1;
+                Valor2 = v2;
+                return Calcular(match.Groups["op"].Value);
             }
         }
-        public static bool Calcular(decimal valorA, decimal valorB, string op, out decimal resultado)
+        private double Calcular(string op)
         {
             switch (op)
             {
                 case "+":
-                    resultado = Calc.Sumar(valorA, valorB);
-                    break;
+                    return Sumar();
                 case "-":
-                    resultado = Calc.Restar(valorA, valorB);
-                    break;
+                    return Restar();
                 case "*":
-                    resultado = Calc.Multiplicar(valorA, valorB);
-                    break;
+                    return Multiplicar();
                 case "/":
-                    resultado = Calc.Dividir(valorA, valorB);
-                    break;
+                    return Dividir();
                 default:
-                    resultado = 0;
-                    return false;
+                    return double.NaN;
             }
-            return true;
         }
-        public static bool ValidarDecimal(string s, out decimal numero)
+        private bool ValidarDouble(string s, out double numero)
         {
-            return decimal.TryParse(s, out numero);
+            return double.TryParse(s, out numero);
         }
-        public static decimal Sumar(decimal a, decimal b)
+        public bool SetValor1(string s)
         {
-            return a + b;
+            if( double.TryParse(s, out double valor))
+            {
+                Valor1 = valor;
+                return true;
+            }
+            return false;
         }
-        public static decimal Restar(decimal a, decimal b)
+        public bool SetValor2(string s)
         {
-            return a - b;
+            if (double.TryParse(s, out double valor))
+            {
+                Valor2 = valor;
+                return true;
+            }
+            return false;
         }
-        public static decimal Multiplicar(decimal a, decimal b)
+        public double Sumar()
         {
-            return a * b;
+            Resultado = Valor1 + Valor2;
+            return Resultado;
         }
-        public static decimal Dividir(decimal a, decimal b)
+        public double Restar()
         {
-            if (b == 0) return 0;
-            return a / b;
+            Resultado = Valor1 - Valor2;
+            return Resultado;
         }
+        public double Multiplicar()
+        {
+            Resultado = Valor1 * Valor2;
+            return Resultado;
+        }
+        public double Dividir()
+        {
+            if (_valor2 == 0)
+            {
+                _error = "No se puede dividir por cero.";
+                return double.NaN;
+            }
+
+            Resultado = _valor1 / _valor2;
+
+            return Resultado;
+        }
+
     }
 }
